@@ -1,107 +1,100 @@
-import { nanoid } from "nanoid";
-import { Link } from "react-router-dom";
-import { HiOutlinePencil } from "react-icons/hi";
-import { HiOutlineTrash } from "react-icons/hi";
-import { HiOutlineEye } from "react-icons/hi";
-import { userAdminItems } from "../../../utils/data";
+// components/UsersTable.tsx
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from 'react-icons/hi'
+import { useDeleteUser } from '../../../api/users'
+import { User } from '../../../types/user'
 
 
-export const UserTable = () => {
-  return (
-    <table className="mt-6 w-full whitespace-nowrap text-left max-lg:block max-lg:overflow-x-scroll">
-      <colgroup>
-        <col className="w-full sm:w-4/12" />
-        <col className="lg:w-4/12" />
-        <col className="lg:w-2/12" />
-        <col className="lg:w-1/12" />
-        <col className="lg:w-1/12" />
-      </colgroup>
-      <thead className="border-b border-white/10 text-sm leading-6 dark:text-whiteSecondary text-blackPrimary">
+interface UsersTableProps {
+  users: User[]
+  onSort: (key: keyof User) => void
+  onDelete: (id: number) => void
+  sortConfig: { key: string; direction: 'asc' | 'desc' }
+}
+
+const UsersTable = ({ users, onSort, onDelete, sortConfig }: UsersTableProps) => {
+  const [isMobile] = useState(window.innerWidth < 768)
+  const { mutate: deleteUser } = useDeleteUser()
+
+  const handleDelete = (id: number) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      deleteUser(id)
+    }
+  }
+
+  const MobileCard = ({ user }: { user: User }) => (
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-4">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-medium text-black dark:text-white">{user.name}</h3>
+        <div className="flex gap-2">
+          <Link to={`/users/${user.id}`} className="text-blue-500 hover:text-blue-700">
+            <HiOutlineEye />
+          </Link>
+          <Link to={`/users/edit/${user.id}`} className="text-green-500 hover:text-green-700">
+            <HiOutlinePencil />
+          </Link>
+          <button onClick={() => handleDelete(user.id)} className="text-red-500 hover:text-red-700">
+            <HiOutlineTrash />
+          </button>
+        </div>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-300">{user.email}</p>
+      <p className="text-sm text-gray-600 dark:text-gray-300">{user.phone}</p>
+    </div>
+  )
+
+  return isMobile ? (
+    <div className="lg:hidden">
+      {users.map(user => (
+        <MobileCard key={user.id} user={user} />
+      ))}
+    </div>
+  ) : (
+    <table className="hidden lg:table w-full rounded-lg overflow-hidden shadow-lg">
+      <thead className="bg-gray-100 dark:bg-gray-700">
         <tr>
-          <th
-            scope="col"
-            className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8"
-          >
-            User
-          </th>
-          <th scope="col" className="py-2 pl-0 pr-8 font-semibold table-cell">
-            Email address
-          </th>
-          <th scope="col" className="py-2 pl-0 pr-8 font-semibold table-cell">
-            Role
-          </th>
-          <th
-            scope="col"
-            className="py-2 pl-0 pr-8 font-semibold table-cell lg:pr-20"
-          >
-            Date
-          </th>
-          <th
-            scope="col"
-            className="py-2 pl-0 pr-4 text-right font-semibold table-cell sm:pr-6 lg:pr-8"
-          >
-            Actions
-          </th>
+          {['name', 'email', 'phone', 'username', 'actions'].map(key => (
+            <th
+              key={key}
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+              onClick={() => key !== 'actions' && onSort(key as keyof User)}
+            >
+              {key}
+              {sortConfig.key === key && (
+                <span className="ml-1">
+                  {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                </span>
+              )}
+            </th>
+          ))}
         </tr>
       </thead>
-      <tbody className="divide-y divide-white/5">
-        {userAdminItems.map((item) => (
-          <tr key={nanoid()}>
-            <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-              <div className="flex items-center gap-x-4">
-                <img
-                  src={item.user.imageUrl}
-                  alt=""
-                  className="h-8 w-8 rounded-full bg-gray-800"
-                />
-                <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
-                  {item.user.name}
-                </div>
-              </div>
-            </td>
-            <td className="py-4 pl-0 pr-4 table-cell pr-8">
-              <div className="flex gap-x-3">
-                <div className="text-sm leading-6 py-1 dark:text-whiteSecondary text-blackPrimary">
-                  {item.email}
-                </div>
-              </div>
-            </td>
-            <td className="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20">
-              <div className="flex items-center gap-x-2 justify-start">
-                <div className="dark:text-whiteSecondary text-blackPrimary block font-medium">
-                  {item.role}
-                </div>
-              </div>
-            </td>
-            <td className="py-4 pl-0 pr-8 text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell lg:pr-20">
-              {item.lastLogin}
-            </td>
-            <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell pr-6 lg:pr-8">
-              <div className="flex gap-x-1 justify-end">
-                <Link
-                  to="/users/1"
-                  className="dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
-                >
-                  <HiOutlinePencil className="text-lg" />
+      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+        {users.map(user => (
+          <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td className="px-6 py-4 whitespace-nowrap dark:text-white">{user.name}</td>
+            <td className="px-6 py-4 whitespace-nowrap dark:text-white">{user.email}</td>
+            <td className="px-6 py-4 whitespace-nowrap dark:text-white">{user.phone}</td>
+            <td className="px-6 py-4 whitespace-nowrap dark:text-white">{user.username}</td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="flex gap-2">
+                <Link to={`/users/${user.id}`} className="text-blue-500 hover:text-blue-700">
+                  <HiOutlineEye />
                 </Link>
-                <Link
-                  to="/users/1"
-                  className="dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
-                >
-                  <HiOutlineEye className="text-lg" />
+                <Link to={`/users/edit/${user.id}`} className="text-green-500 hover:text-green-700">
+                  <HiOutlinePencil />
                 </Link>
-                <Link
-                  to="#"
-                  className="dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
-                >
-                  <HiOutlineTrash className="text-lg" />
-                </Link>
+                <button onClick={() => handleDelete(user.id)} className="text-red-500 hover:text-red-700">
+                  <HiOutlineTrash />
+                </button>
               </div>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
-  );
-};
-export default UserTable;
+  )
+}
+
+export default UsersTable

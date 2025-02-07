@@ -1,43 +1,50 @@
-import { useQuery } from '@tanstack/react-query'
-
-// import SearchInput from './SearchInput'
-// import ErrorState from './ErrorState'
+// components/UserDashboard.tsx
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { User } from '../../types/user'
 import { useUsers } from '../../api/users'
-import { useDebounce } from '../../hooks/useDebounce'
+import SearchInput from '../../common/SearcInput'
 import { SkeletonLoader } from '../../common/LoadingSkeleton'
-import { UserTable } from '../Tables/UsersTable'
+import UsersTable from '../Tables/UsersTable'
+
+
 
 export const UserDashboard = () => {
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
+  const [sortConfig, setSortConfig] = useState<{ key: keyof User; direction: 'asc' | 'desc' }>({
     key: 'name',
     direction: 'asc',
   })
 
-  const { data, isLoading, isError } = useUsers(page, searchTerm)
+  const { data, isLoading, isError } = useUsers(page, searchTerm, sortConfig)
 
-  const handleSearch = useDebounce((term: string | undefined | any) => {
-    setSearchTerm(term)
-    setPage(1)
-  }, 300)
+  const handleSort = (key: keyof User) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
+    }))
+  }
 
   if (isLoading) return <SkeletonLoader />
-//   if (isError) return <ErrorState />
+  if (isError) return <div>Error loading users</div>
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        {/* <SearchInput onSearch={handleSearch} /> */}
-        {/* <CreateUserButton /> */}
+    <div className="p-6">
+      <div className="mb-6">
+        <SearchInput onSearch={setSearchTerm} />
       </div>
       
-      <UserTable />
-      
+      <UsersTable
+        users={data?.users || []}
+        onSort={handleSort}
+        sortConfig={sortConfig}
+        onDelete={() => {}}
+      />
+
       {/* <Pagination
         currentPage={page}
-        totalPages={data.totalPages}
+        totalPages={data?.totalPages || 1}
         onPageChange={setPage}
       /> */}
     </div>

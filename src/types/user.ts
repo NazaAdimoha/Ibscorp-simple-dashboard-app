@@ -24,4 +24,4 @@ export interface UsersResponse {
   }
   
   export type UserCreateDTO = Omit<User, 'id'>
-  export type UserUpdateDTO = Partial<UserCreateDTO>
+export type UserUpdateDTO = Partial<UserCreateDTO> & { id: number }

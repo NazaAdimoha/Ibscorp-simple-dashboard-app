@@ -5,14 +5,23 @@ import toast from 'react-hot-toast'
 
 const USER_CACHE_KEY = ['users']
 
-export const useUsers = (page: number, search: string) => {
+export const useUsers = (
+    page: number,
+    search: string,
+    sortConfig: { key: keyof User; direction: 'asc' | 'desc' }
+  ) => {
     return useQuery({
-      queryKey: [...USER_CACHE_KEY, page, search],
+      queryKey: [...USER_CACHE_KEY, page, search, sortConfig],
       queryFn: async () => {
         const response = await apiClient.get<User[]>('/users', {
-          params: { q: search, _page: page, _limit: 10 }
+          params: {
+            _page: page,
+            _limit: 10,
+            q: search,
+            _sort: sortConfig.key,
+            _order: sortConfig.direction,
+          }
         })
-        
         return {
           users: response.data,
           totalPages: Math.ceil(Number(response.headers['x-total-count']) / 10)
@@ -42,6 +51,17 @@ export const useUsers = (page: number, search: string) => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: USER_CACHE_KEY })
         toast.success('User updated successfully')
+      }
+    })
+  }
+
+  export const useDeleteUser = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+      mutationFn: (id: number) => apiClient.delete(`/users/${id}`),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: USER_CACHE_KEY })
+        toast.success('User deleted successfully')
       }
     })
   }
