@@ -1,8 +1,8 @@
-
+import { UserDashboard } from "../../components/UsersDashboard"
 
 const Users = () => {
   return (
-    <div>Users</div>
+    <UserDashboard />
   )
 }
 
