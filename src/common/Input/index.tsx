@@ -19,6 +19,6 @@ export const Input = forwardRef<
       } focus:ring-2 focus:ring-primary-light focus:border-primary-light`}
       {...props}
     />
-    {error && <p className="text-error text-sm">{error}</p>}
+    {error && <p className="text-danger text-sm">{error}</p>}
   </div>
 ))
