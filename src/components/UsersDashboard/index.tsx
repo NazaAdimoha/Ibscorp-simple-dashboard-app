@@ -1,11 +1,12 @@
-// components/UserDashboard.tsx
+
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { User } from '../../types/user'
 import { useUsers } from '../../api/users'
 import SearchInput from '../../common/SearcInput'
 import { SkeletonLoader } from '../../common/LoadingSkeleton'
 import UsersTable from '../Tables/UsersTable'
+import { CreateUserButton } from './CreateUserButton'
+import { Pagination } from '../Tables/Pagination'
 
 
 
@@ -31,8 +32,9 @@ export const UserDashboard = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
         <SearchInput onSearch={setSearchTerm} />
+        <CreateUserButton />
       </div>
       
       <UsersTable
@@ -42,11 +44,11 @@ export const UserDashboard = () => {
         onDelete={() => {}}
       />
 
-      {/* <Pagination
+      <Pagination
         currentPage={page}
         totalPages={data?.totalPages || 1}
         onPageChange={setPage}
-      /> */}
+      />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
@@ -17,6 +17,8 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import Users from './pages/Dashboard/Users';
+
+const UserDetails = lazy(() => import('./pages/Dashboard/User/UserDetails'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,13 +47,22 @@ function App() {
           }
         />
 
-<Route
+        <Route
           path="/users"
           element={
             <>
               <PageTitle title="Users" />
               <Users />
             </>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <Suspense fallback={<Loader />}>
+              <PageTitle title="User Details" />
+              <UserDetails />
+            </Suspense>
           }
         />
         <Route
