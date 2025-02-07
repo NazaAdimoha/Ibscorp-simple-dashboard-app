@@ -15,9 +15,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            Naza Adimoha
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">Agba Coder</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -41,7 +41,6 @@ const DropdownUser = () => {
         </svg>
       </Link>
 
-      {/* <!-- Dropdown Start --> */}
       {dropdownOpen && (
         <div
           className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
