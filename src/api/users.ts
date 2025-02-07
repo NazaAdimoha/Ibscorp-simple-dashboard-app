@@ -10,26 +10,14 @@ import toast from 'react-hot-toast';
 
 const USER_CACHE_KEY = ['users'];
 
-export const useUsers = (
-  page: number,
-  search: string,
-  sortConfig: { key: keyof User; direction: 'asc' | 'desc' },
-) => {
+export const useUsers = () => {
   return useQuery({
-    queryKey: [...USER_CACHE_KEY, page, search, sortConfig],
+    queryKey: [...USER_CACHE_KEY],
     queryFn: async () => {
-      const response = await apiClient.get<User[]>('/users', {
-        params: {
-          _page: page,
-          _limit: 10,
-          q: search,
-          _sort: sortConfig.key,
-          _order: sortConfig.direction,
-        },
-      });
+      const response = await apiClient.get<User[]>('/users');
       return {
         users: response.data,
-        totalPages: Math.ceil(Number(response.headers['x-total-count']) / 10),
+        totalPages: 1,
       } as UsersResponse;
     },
   });

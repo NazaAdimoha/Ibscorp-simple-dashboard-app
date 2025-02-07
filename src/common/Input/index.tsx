@@ -14,8 +14,8 @@ export const Input = forwardRef<
   <div className={`space-y-2 ${className}`}>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
     <input
-      className={`w-full px-4 py-2 rounded-lg border ${
-        error ? 'border-error' : 'border-gray-300'
+      className={`w-full px-4 py-3 rounded-lg border ${
+        error ? 'border-danger' : 'border-gray-700'
       } focus:ring-2 focus:ring-primary-light focus:border-primary-light`}
       {...props}
     />

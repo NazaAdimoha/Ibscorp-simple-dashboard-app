@@ -1,64 +1,126 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { useCreateUser } from '../../../api/users'
+import { Input } from '../../../common/Input'
 import { UserCreateDTO } from '../../../types/user'
-import toast from 'react-hot-toast'
-
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(1, 'Phone is required'),
   username: z.string().min(1, 'Username is required'),
-  website: z.string().min(1, 'Website is required'),
+  website: z.string().url('Invalid website URL').or(z.literal('')),
   address: z.object({
-    street: z.string().min(1),
-    city: z.string().min(1),
-    zipcode: z.string().min(1),
+    street: z.string().min(1, 'Street is required'),
+    suite: z.string().optional(),
+    city: z.string().min(1, 'City is required'),
+    zipcode: z.string().min(1, 'Zipcode is required')
   }),
   company: z.object({
-    name: z.string().min(1),
+    name: z.string().min(1, 'Company name is required'),
+    catchPhrase: z.string().optional(),
+    bs: z.string().optional()
   })
 })
 
-interface UserFormProps {
-  onCancel: () => void
-  onSubmitSuccess: () => void
-}
-
-export const UserForm = ({ onSubmitSuccess }: UserFormProps) => {
+export const UserForm = ({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: (data: UserCreateDTO) => void }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<UserCreateDTO>({
     resolver: zodResolver(userSchema)
   })
 
-  const { mutate: createUser } = useCreateUser()
-
-  const onSubmit = (data: UserCreateDTO) => {
-    createUser(data, {
-      onSuccess: () => {
-        onSubmitSuccess()
-        toast.success('User created successfully')
-      }
-    })
-  }
-
   return (
-<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-<div>
-  <label className="block text-sm font-medium text-gray-700">Name</label>
-  <input
-    {...register('name', { required: 'Name is required' })}
-    className={`mt-1 block w-full rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'} shadow-sm`}
-  />
-  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
-</div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 h-[50dvh] overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          label="Full Name"
+          {...register('name')}
+          error={errors.name?.message}
+        />
+        <Input
+          label="Email"
+        //   type="email"
+          {...register('email')}
+          error={errors.email?.message}
+        />
+        <Input
+          label="Username"
+          {...register('username')}
+          error={errors.username?.message}
+        />
+        <Input
+          label="Phone"
+          {...register('phone')}
+          error={errors.phone?.message}
+        />
+        <Input
+          label="Website"
+          {...register('website')}
+          error={errors.website?.message}
+        />
+      </div>
 
-<button type="submit" className="btn-primary">
-  Create user
-</button>
-</form>
+      <div className="border-t pt-4">
+        <h3 className="text-lg font-medium mb-4">Address Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Street"
+            {...register('address.street')}
+            error={errors.address?.street?.message}
+          />
+          <Input
+            label="City"
+            {...register('address.city')}
+            error={errors.address?.city?.message}
+          />
+          <Input
+            label="Zipcode"
+            {...register('address.zipcode')}
+            error={errors.address?.zipcode?.message}
+          />
+          <Input
+            label="Suite"
+            {...register('address.suite')}
+            error={errors.address?.suite?.message}
+          />
+        </div>
+      </div>
+
+      <div className="border-t pt-4">
+        <h3 className="text-lg font-medium mb-4">Company Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Company Name"
+            {...register('company.name')}
+            error={errors.company?.name?.message}
+          />
+          <Input
+            label="Catch Phrase"
+            {...register('company.catchPhrase')}
+            error={errors.company?.catchPhrase?.message}
+          />
+          <Input
+            label="BS"
+            {...register('company.bs')}
+            error={errors.company?.bs?.message}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-4 mt-8">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Create User
+        </button>
+      </div>
+    </form>
   )
 }
-
-
