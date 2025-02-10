@@ -11,7 +11,7 @@
   "author": {
     "name": "nazas-admin-dashboard",
     "email": "adimohanaza@tailadmin.com",
-    "url": "https://tailadmin.com"
+    "url": "https://ibscorp-simple-dashboard-app.vercel.app/"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
