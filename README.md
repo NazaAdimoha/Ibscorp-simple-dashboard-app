@@ -6,6 +6,14 @@
 
 A modern admin dashboard with responsive design, CRUD operations, and API integration built with React, TypeScript, and Tailwind CSS.
 
+```
+![Dashboard Preview](/public/Screenshot 2025-02-10 at 03.38.06.png)
+```
+
+```
+![Dashboard Preview](/public/Screenshot 2025-02-10 at 03.45.33.png)
+```
+
 
 Features
 
@@ -80,7 +88,6 @@ npm install
 
 yarn install
 
-
 **Start development server**
 
 npm run dev
@@ -89,7 +96,6 @@ npm run dev
 
 yarn dev
 
-
 **Build for production**
 
 npm run build
@@ -97,7 +103,6 @@ npm run build
 # or
 
 yarn build
-
 
 ## Project Structure
 
@@ -116,7 +121,6 @@ src/
 ├── utils/             # Utility functions
 ├── App.tsx            # Root component
 └── main.tsx           # Entry point
-
 
 ## Key Configuration
 
